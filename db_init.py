@@ -7,7 +7,7 @@ Creates gurdwarai.db with all tables + seeds the 3 Gurdwaras
 import sqlite3
 from datetime import datetime
 
-DB_PATH = "gurdwarai.db"
+DB_PATH = "sewapark.db"
 
 def init_db():
     conn = sqlite3.connect(DB_PATH)
@@ -204,21 +204,8 @@ def seed(conn):
     """, ("Central Sikh Temple", "CST", "2 Towner Road, Singapore 327804", 30))
     cst_id = c.lastrowid
 
-    cst_lots = (
-        [("L"+str(i), "lhs") for i in range(1,9)] +
-        [("C"+str(i), "center") for i in range(1,9)] +
-        [("R"+str(i), "rhs") for i in range(1,9)] +
-        [("RAGI-1","reserved"),("RAGI-2","reserved"),
-         ("RES-1","reserved"),("RES-2","reserved"),("RES-3","reserved"),
-         ("SLOPE-1","slope"),("SLOPE-2","slope"),
-         ("JB-BUS","bus")]
-    )
-    for label, zone in cst_lots:
-        status = "reserved_empty" if zone == "reserved" else "empty"
-        c.execute(
-            "INSERT INTO lots (gurdwara_id, label, zone, status) VALUES (?,?,?,?)",
-            (cst_id, label, zone, status)
-        )
+    # Lots to be configured after physical survey of CST carpark
+    # Run again after KW27 recce to add actual lot layout
 
     cst_ics = [
         ("Jagpreet Singh",  "JS", "Carpark IC",         "FULL CARPARK + SHABEEL"),
@@ -232,58 +219,7 @@ def seed(conn):
             (cst_id, name, initials, role, area)
         )
 
-    print("✓ Central Sikh Temple seeded")
-
-    # ===== 2. SILAT ROAD GURDWARA =====
-    c.execute("""
-        INSERT INTO gurdwaras (name, short_name, address, total_lots)
-        VALUES (?, ?, ?, ?)
-    """, ("Silat Road Gurdwara", "SRG", "Silat Road, Singapore", 10))
-    srg_id = c.lastrowid
-
-    srg_lots = (
-        [("S"+str(i), "lhs") for i in range(1,5)] +
-        [("S"+str(i), "rhs") for i in range(5,8)] +
-        [("RAGI-1","reserved"),("RES-1","reserved"),("JB-BUS","bus")]
-    )
-    for label, zone in srg_lots:
-        status = "reserved_empty" if zone == "reserved" else "empty"
-        c.execute(
-            "INSERT INTO lots (gurdwara_id, label, zone, status) VALUES (?,?,?,?)",
-            (srg_id, label, zone, status)
-        )
-    c.execute(
-        "INSERT INTO ics (gurdwara_id, name, initials, role, area) VALUES (?,?,?,?,?)",
-        (srg_id, "Silat IC", "SI", "Carpark IC", "FULL CARPARK")
-    )
-    print("✓ Silat Road Gurdwara seeded")
-
-    # ===== 3. DHARMAK SABHA GURDWARA =====
-    c.execute("""
-        INSERT INTO gurdwaras (name, short_name, address, total_lots)
-        VALUES (?, ?, ?, ?)
-    """, ("Dharmak Sabha Gurdwara", "DSG", "Dharmak Sabha, Singapore", 20))
-    dsg_id = c.lastrowid
-
-    dsg_lots = (
-        [("D"+str(i), "lhs")    for i in range(1,7)] +
-        [("D"+str(i), "rhs")    for i in range(7,11)] +
-        [("D"+str(i), "center") for i in range(11,15)] +
-        [("RAGI-1","reserved"),("RAGI-2","reserved"),
-         ("RES-1","reserved"),("SLOPE-1","slope"),("JB-BUS","bus")]
-    )
-    for label, zone in dsg_lots:
-        status = "reserved_empty" if zone == "reserved" else "empty"
-        c.execute(
-            "INSERT INTO lots (gurdwara_id, label, zone, status) VALUES (?,?,?,?)",
-            (dsg_id, label, zone, status)
-        )
-    c.execute(
-        "INSERT INTO ics (gurdwara_id, name, initials, role, area) VALUES (?,?,?,?,?)",
-        (dsg_id, "Dharmak IC", "DI", "Carpark IC", "FULL CARPARK")
-    )
-    print("✓ Dharmak Sabha Gurdwara seeded")
-
+    print("✓ Central Sikh Temple seeded (lot layout pending physical survey)")
     conn.commit()
 
 
