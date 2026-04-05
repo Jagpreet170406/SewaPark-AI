@@ -1,6 +1,6 @@
 # ☬ SewaPark-AI
 ### AI-assisted Gurdwara Carpark Management System
-**Sikh Sewaks Singapore · Nishkam Seva meets Engineering**
+**Nishkam Seva meets Engineering**
 
 🧡💙 *Because seva doesn't end at the Gurdwara gates — it lives in every corner of the community it serves.*
 
@@ -8,7 +8,7 @@
 
 ## What is SewaPark-AI?
 
-SewaPark-AI is a mobile-first carpark command system built for Gurdwara events. It was born out of real operational challenges faced during **Khalsa Week 2026** as Carpark IC for Sikh Sewaks Singapore — manpower shortages, stack parking violations, Ragi Jatha lot conflicts, and the eternal unmovable uncle at the drop-off zone. 😤
+SewaPark-AI is a mobile-first carpark command system built for Gurdwara events. It was born out of real operational challenges faced during **Khalsa Week 2026** as Carpark IC — manpower shortages, stack parking violations and Ragi Jatha lot conflicts. 
 
 Rather than just writing an After Action Review, I built a system to fix it.
 
@@ -26,7 +26,6 @@ Rather than just writing an After Action Review, I built a system to fix it.
 | ⚠️ **Incident Logger** | Real-time logging by IC on the ground |
 | 📊 **Auto AAR** | After Action Review auto-generated from incident logs, grouped by type and severity |
 | 👥 **IC Roster + DND** | Manage on-duty ICs and notification preferences |
-| 🏛️ **Multi-Gurdwara** | Supports Central Sikh Temple, Silat Road, and Dharmak Sabha Gurdwara |
 
 ---
 
@@ -102,8 +101,6 @@ sewapark-ai/
 | Gurdwara | Code | Lots |
 |---|---|---|
 | Central Sikh Temple | CST | 32 |
-| Silat Road Gurdwara | SRG | 10 |
-| Dharmak Sabha Gurdwara | DSG | 19 |
 
 ---
 
@@ -128,4 +125,4 @@ Every feature in this app came from a real problem faced on the ground. The Ragi
 
 ---
 
-*Built by Jagpreet Singh · Sikh Sewaks Singapore · Cybersecurity & Digital Forensics, Nanyang Polytechnic*
+*Built by Jagpreet Singh · Year 2 Cybersecurity & Digital Forensics, Nanyang Polytechnic*
