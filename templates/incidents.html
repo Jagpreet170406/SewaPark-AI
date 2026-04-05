@@ -1,0 +1,103 @@
+{% extends "base.html" %}
+{% block title %}{{ gurdwara.short_name }} — Incident Log{% endblock %}
+{% block content %}
+{% set active_nav = 'incidents' %}
+
+<div style="padding-top:12px;">
+
+  <!-- Log new incident -->
+  <div class="card red" style="padding:14px;">
+    <div class="card-title">▸ Log Incident</div>
+    <form action="/g/{{ gid }}/incidents/log" method="POST">
+      <div class="form-group">
+        <label>INCIDENT TYPE</label>
+        <select name="type" required>
+          <option value="stack_parking">Stack Parking</option>
+          <option value="dropoff_violation">Drop-off Violation</option>
+          <option value="reserved_lot_blocked">Reserved Lot Blocked</option>
+          <option value="rowdy_sangat">Rowdy Sangat</option>
+          <option value="manpower_shortage">Manpower Shortage</option>
+          <option value="ragi_lot_issue">Ragi Lot Issue</option>
+          <option value="jb_bus_issue">JB Bus Issue</option>
+          <option value="flyer_comms_failure">Flyer Comms Failure</option>
+          <option value="gate_issue">Gate Issue</option>
+          <option value="elderly_assist">Elderly Assist</option>
+          <option value="other">Other</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label>SEVERITY</label>
+        <select name="severity">
+          <option value="low">Low</option>
+          <option value="medium" selected>Medium</option>
+          <option value="high">High</option>
+          <option value="critical">Critical</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label>VEHICLE PLATE (OPT)</label>
+        <input type="text" name="plate" placeholder="SGA123B" class="plate-input" />
+      </div>
+      <div class="form-group">
+        <label>KW DAY (OPT)</label>
+        <input type="number" name="day" placeholder="1" min="1" max="10" />
+      </div>
+      <div class="form-group">
+        <label>EVENT NAME (OPT)</label>
+        <input type="text" name="event_name" placeholder="Khalsa Week Day 1" />
+      </div>
+      <div class="form-group">
+        <label>IC REPORTING</label>
+        <select name="ic_id">
+          <option value="">— Select IC —</option>
+          {% for ic in ics %}
+          <option value="{{ ic.id }}">{{ ic.name }}</option>
+          {% endfor %}
+        </select>
+      </div>
+      <div class="form-group">
+        <label>NOTES *</label>
+        <textarea name="notes" placeholder="Describe what happened..." required></textarea>
+      </div>
+      <button type="submit" class="btn btn-red" style="margin:0;">⚠ LOG INCIDENT</button>
+    </form>
+  </div>
+
+  <!-- Filter by day -->
+  <div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:12px;">
+    <a href="/g/{{ gid }}/incidents" class="btn btn-dim btn-sm" style="{% if not day %}border-color:var(--accent);color:var(--accent);{% endif %}">ALL</a>
+    {% for d in range(1,6) %}
+    <a href="/g/{{ gid }}/incidents?day={{ d }}" class="btn btn-dim btn-sm" style="{% if day == d|string %}border-color:var(--accent);color:var(--accent);{% endif %}">DAY {{ d }}</a>
+    {% endfor %}
+  </div>
+
+  <!-- Incidents list -->
+  <div class="card" style="padding:0;">
+    {% if incidents %}
+      {% for inc in incidents %}
+      <div class="incident-item">
+        <span class="incident-sev sev-{{ inc.severity }}">{{ inc.severity.upper() }}</span>
+        <div class="incident-body">
+          <div class="incident-type">{{ inc.type.replace('_',' ').title() }}{% if inc.resolved %} <span style="color:var(--green);font-size:11px;">✓ RESOLVED</span>{% endif %}</div>
+          <div class="incident-notes">{{ inc.notes }}</div>
+          <div class="incident-meta">
+            {{ inc.timestamp[:16] }}
+            {% if inc.plate %} · <span class="plate">{{ inc.plate }}</span>{% endif %}
+            {% if inc.ic_name %} · {{ inc.ic_name }}{% endif %}
+            {% if inc.day %} · Day {{ inc.day }}{% endif %}
+          </div>
+          {% if not inc.resolved %}
+          <form action="/g/{{ gid }}/incidents/{{ inc.id }}/resolve" method="POST" style="margin-top:6px;">
+            <input type="text" name="resolved_notes" placeholder="Resolution notes..." style="background:var(--panel2);border:1px solid var(--border);color:var(--text);font-family:var(--body);font-size:13px;padding:6px 10px;width:100%;outline:none;margin-bottom:4px;" />
+            <button type="submit" class="btn btn-green btn-sm" style="margin:0;">✓ RESOLVE</button>
+          </form>
+          {% endif %}
+        </div>
+      </div>
+      {% endfor %}
+    {% else %}
+      <div class="empty-state">No incidents logged{% if day %} for Day {{ day }}{% endif %}.</div>
+    {% endif %}
+  </div>
+</div>
+{% endblock %}

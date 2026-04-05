@@ -1,0 +1,82 @@
+<!-- BOOKINGS -->
+{% extends "base.html" %}
+{% block title %}{{ gurdwara.short_name }} — Reserved Lots{% endblock %}
+{% block content %}
+{% set active_nav = 'bookings' %}
+<div style="padding-top:12px;">
+
+  <div class="card purple" style="padding:14px;">
+    <div class="card-title">▸ New Reservation</div>
+    <form action="/g/{{ gid }}/bookings/create" method="POST">
+      <div class="form-group">
+        <label>VEHICLE PLATE</label>
+        <input type="text" name="plate" placeholder="SGA123B" class="plate-input" required />
+      </div>
+      <div class="form-group">
+        <label>LOT</label>
+        <select name="lot_id" required>
+          <option value="">— Select Reserved Lot —</option>
+          {% for lot in reserved_lots %}
+          <option value="{{ lot.id }}" {% if lot.status == 'reserved_booked' %}disabled{% endif %}>
+            {{ lot.label }} {% if lot.status == 'reserved_booked' %}(TAKEN — {{ lot.plate }}){% endif %}
+          </option>
+          {% endfor %}
+        </select>
+      </div>
+      <div class="form-group">
+        <label>DRIVER / OWNER NAME</label>
+        <input type="text" name="owner_name" placeholder="Giani Singh" required />
+      </div>
+      <div class="form-group">
+        <label>TYPE</label>
+        <select name="type">
+          <option value="ragi">Ragi Jatha</option>
+          <option value="sewadar">Sewadar</option>
+          <option value="jathedar">Jathedar</option>
+          <option value="vip">VIP Sangat</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label>EVENT / PROGRAMME</label>
+        <input type="text" name="event_name" placeholder="Khalsa Week Day 4" required />
+      </div>
+      <div class="form-group">
+        <label>JATHEDAR NAME (OPT)</label>
+        <input type="text" name="jathedar_name" placeholder="Bhai Jagpreet Singh" />
+      </div>
+      <div class="form-group">
+        <label>ARRIVAL TIME (OPT)</label>
+        <input type="time" name="arrival_time" />
+      </div>
+      <button type="submit" class="btn btn-purple" style="margin:0;">☊ CONFIRM RESERVATION</button>
+    </form>
+  </div>
+
+  <div class="section-title">ACTIVE BOOKINGS ({{ bookings|length }})</div>
+  {% for b in bookings %}
+  <div class="card {% if b.status == 'arrived' %}green{% elif b.status == 'cancelled' %}red{% else %}purple{% endif %}" style="padding:14px;margin-bottom:8px;">
+    <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:8px;">
+      <div>
+        <div class="plate" style="font-size:18px;">{{ b.plate }}</div>
+        <div style="font-size:14px;margin-top:2px;">{{ b.owner_name }}</div>
+        <div style="font-family:var(--mono);font-size:10px;color:var(--dim);margin-top:2px;letter-spacing:1px;">{{ b.lot_label }} · {{ b.event_name }}</div>
+        {% if b.arrival_time %}<div style="font-family:var(--mono);font-size:10px;color:var(--dim);">ETA: {{ b.arrival_time }}</div>{% endif %}
+      </div>
+      <span class="badge badge-{{ b.status }}">{{ b.status.upper() }}</span>
+    </div>
+    {% if b.status == 'confirmed' %}
+    <div class="row">
+      <form action="/g/{{ gid }}/bookings/{{ b.id }}/arrive" method="POST" style="flex:1;">
+        <button type="submit" class="btn btn-green btn-sm" style="margin:0;width:100%;">✓ ARRIVED</button>
+      </form>
+      <form action="/g/{{ gid }}/bookings/{{ b.id }}/cancel" method="POST" style="flex:1;">
+        <button type="submit" class="btn btn-red btn-sm" style="margin:0;width:100%;">✕ CANCEL</button>
+      </form>
+    </div>
+    {% endif %}
+  </div>
+  {% else %}
+  <div class="empty-state">No reservations yet.</div>
+  {% endfor %}
+</div>
+{% endblock %}

@@ -1,0 +1,78 @@
+{% extends "base.html" %}
+{% block title %}{{ gurdwara.short_name }} — After Action Review{% endblock %}
+{% block content %}
+{% set active_nav = 'aar' %}
+<div style="padding-top:12px;">
+
+  <!-- Day filter -->
+  <div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:12px;">
+    <a href="/g/{{ gid }}/aar" class="btn btn-dim btn-sm" style="{% if not selected_day %}border-color:var(--accent);color:var(--accent);{% endif %}">ALL DAYS</a>
+    {% for d in days_available %}
+    <a href="/g/{{ gid }}/aar?day={{ d.day }}" class="btn btn-dim btn-sm" style="{% if selected_day == d.day|string %}border-color:var(--accent);color:var(--accent);{% endif %}">DAY {{ d.day }}</a>
+    {% endfor %}
+  </div>
+
+  <!-- Summary stats -->
+  <div class="stat-grid" style="grid-template-columns:1fr 1fr 1fr 1fr;gap:6px;margin-bottom:12px;">
+    <div class="stat-box" style="padding:10px 6px;">
+      <div class="stat-val" style="font-size:28px;color:var(--text);">{{ incidents|length }}</div>
+      <div class="stat-lbl">TOTAL</div>
+    </div>
+    <div class="stat-box s-red" style="padding:10px 6px;">
+      <div class="stat-val" style="font-size:28px;">{{ severity.critical + severity.high }}</div>
+      <div class="stat-lbl">HIGH+</div>
+    </div>
+    <div class="stat-box s-green" style="padding:10px 6px;">
+      <div class="stat-val" style="font-size:28px;">{{ incidents|selectattr('resolved')|list|length }}</div>
+      <div class="stat-lbl">RESOLVED</div>
+    </div>
+    <div class="stat-box s-orange" style="padding:10px 6px;">
+      <div class="stat-val" style="font-size:28px;">{{ incidents|rejectattr('resolved')|list|length }}</div>
+      <div class="stat-lbl">OPEN</div>
+    </div>
+  </div>
+
+  <!-- Grouped by type -->
+  {% if grouped %}
+    {% for inc_type, inc_list in grouped.items() %}
+    <div class="card" style="padding:14px;margin-bottom:10px;">
+      <div class="card-title">{{ inc_type.replace('_',' ').upper() }} ({{ inc_list|length }})</div>
+      {% for inc in inc_list %}
+      <div style="padding:8px 0;border-bottom:1px solid rgba(255,255,255,0.04);">
+        <div style="display:flex;gap:8px;align-items:flex-start;">
+          <span class="incident-sev sev-{{ inc.severity }}">{{ inc.severity.upper() }}</span>
+          <div style="flex:1;">
+            <div style="font-size:13px;color:var(--text);">{{ inc.notes }}</div>
+            <div style="font-family:var(--mono);font-size:9px;color:var(--dim);margin-top:3px;letter-spacing:1px;">
+              {{ inc.timestamp[:16] }}
+              {% if inc.plate %} · <span class="plate">{{ inc.plate }}</span>{% endif %}
+              {% if inc.ic_name %} · {{ inc.ic_name }}{% endif %}
+              {% if inc.resolved %} · <span style="color:var(--green);">✓ RESOLVED</span>{% endif %}
+            </div>
+          </div>
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+    {% endfor %}
+  {% else %}
+    <div class="empty-state">No incidents logged yet. Start logging during events to auto-generate the AAR. ☬</div>
+  {% endif %}
+
+  <!-- Auto-generate recommendation prompt -->
+  {% if incidents|length > 0 %}
+  <div class="card gold" style="padding:14px;margin-top:8px;">
+    <div class="card-title">▸ Auto AAR Generation</div>
+    <div style="font-family:var(--mono);font-size:11px;color:var(--dim);letter-spacing:1px;line-height:1.8;margin-bottom:10px;">
+      {{ incidents|length }} incidents logged.<br>
+      {{ severity.critical }} critical · {{ severity.high }} high · {{ severity.medium }} medium · {{ severity.low }} low<br>
+      Most common: {% if grouped %}{{ grouped.keys()|list|first|replace('_',' ') }}{% endif %}
+    </div>
+    <div style="font-family:var(--mono);font-size:10px;color:var(--dim);letter-spacing:1px;">
+      Export this data to generate a full AAR document — connect to the GurdwarAI dashboard for docx export. ☬
+    </div>
+  </div>
+  {% endif %}
+
+</div>
+{% endblock %}
